@@ -20,7 +20,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import { data as rows } from '../../data/data'
+import shortid from 'shortid'
 
 function createData(name, calories, fat, carbs, protein) {
   return { name, calories, fat, carbs, protein };
@@ -52,17 +57,12 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
-  // { id: 'name', numeric: false, disablePadding: true, label: 'Dessert (100g serving)' },
-  // { id: 'calories', numeric: true, disablePadding: false, label: 'Calories' },
-  // { id: 'fat', numeric: true, disablePadding: false, label: 'Fat (g)' },
-  // { id: 'carbs', numeric: true, disablePadding: false, label: 'Carbs (g)' },
-  // { id: 'protein', numeric: true, disablePadding: false, label: 'Protein (g)' },
-  { id: 'name', numeric: false, disablePadding: true, label: 'نام' },
-  { id: 'date', numeric: false, disablePadding: false, label: 'تاریخ' },
-  { id: 'title', numeric: false, disablePadding: false, label: 'عنوان' },
-  { id: 'field', numeric: false, disablePadding: false, label: 'زمینه' },
-  { id: 'old_value', numeric: false, disablePadding: false, label: 'مقدار قدیم' },
-  { id: 'new_value', numeric: false, disablePadding: false, label: 'مقدار جدید' },
+  { id: 'name', numeric: false, filterable: true, disablePadding: true, label: 'نام' },
+  { id: 'date', numeric: false, filterable: true, disablePadding: false, label: 'تاریخ' },
+  { id: 'title', numeric: false, filterable: true, disablePadding: false, label: 'عنوان' },
+  { id: 'field', numeric: false, filterable: true, disablePadding: false, label: 'فیلد' },
+  { id: 'old_value', numeric: false, filterable: false, disablePadding: false, label: 'مقدار قدیم' },
+  { id: 'new_value', numeric: false, filterable: false, disablePadding: false, label: 'مقدار جدید' },
 ];
 
 function EnhancedTableHead(props) {
@@ -99,9 +99,16 @@ function EnhancedTableHead(props) {
                 <span className={classes.visuallyHidden}>
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
-              ) : null}
+              ) :
+               null}
+               
             </TableSortLabel>
-          </TableCell>
+            
+            {headCell.filterable &&
+            <IconButton aria-label="filter list">
+              <FilterListIcon />
+            </IconButton>}
+            </TableCell>
         ))}
       </TableRow>
     </TableHead>
@@ -154,7 +161,7 @@ const EnhancedTableToolbar = (props) => {
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Nutrition
+          لیست تغییرات
         </Typography>
       )}
 
@@ -206,7 +213,7 @@ const useStyles = makeStyles((theme) => ({
 export default function DataTable() {
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('calories');
+  const [orderBy, setOrderBy] = React.useState('id');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
@@ -217,6 +224,10 @@ export default function DataTable() {
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
+
+  React.useEffect(() => {
+    // console.log(rowsPerPage)
+  });
 
   const handleSelectAllClick = (event) => {
     if (event.target.checked) {
@@ -298,7 +309,7 @@ export default function DataTable() {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={shortid.generate()}
                       selected={isItemSelected}
                     >
                       <TableCell padding="checkbox">

@@ -5,7 +5,7 @@ import SetRtl from "./components/SetRtl";
 function App() {
   return (
     <SetRtl>
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <DataTable />
       </Container>
     </SetRtl>
