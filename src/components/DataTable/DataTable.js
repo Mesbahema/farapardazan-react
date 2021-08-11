@@ -24,6 +24,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import SearchInput from '../TextFields/SearchInput'
 import { data as rows } from '../../data/data'
 import shortid from 'shortid'
 
@@ -70,6 +71,15 @@ function EnhancedTableHead(props) {
   const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
   return (
     <TableHead>
@@ -100,16 +110,10 @@ function EnhancedTableHead(props) {
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </span>
               ) :
-               null}
-               
+                null}
+
             </TableSortLabel>
-            
-            {headCell.filterable &&
-            <IconButton aria-label="filter list">
-              <FilterListIcon />
-            </IconButton>}
-            </TableCell>
-        ))}
+          </TableCell>))}
       </TableRow>
     </TableHead>
   );
@@ -133,13 +137,13 @@ const useToolbarStyles = makeStyles((theme) => ({
   highlight:
     theme.palette.type === 'light'
       ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
       : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: '1 1 100%',
   },
@@ -148,6 +152,17 @@ const useToolbarStyles = makeStyles((theme) => ({
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
   const { numSelected } = props;
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const inputs = headCells.filter(cell => cell.filterable);
 
   return (
     <Toolbar
@@ -172,11 +187,25 @@ const EnhancedTableToolbar = (props) => {
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+        <>
+          <Tooltip title="Filter list" onClick={handleClick}>
+            <IconButton aria-label="filter list">
+              <FilterListIcon />
+            </IconButton>
+          </Tooltip>
+          <Menu
+            id="simple-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem>
+            <SearchInput inputs={inputs} />
+            </MenuItem>
+          </Menu>
+        </>
+
       )}
     </Toolbar>
   );
