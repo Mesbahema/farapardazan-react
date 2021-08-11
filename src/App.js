@@ -1,11 +1,14 @@
 import DataTable from "./components/DataTable";
 import Container from '@material-ui/core/Container';
+import SetRtl from "./components/SetRtl";
 
 function App() {
   return (
-    <Container maxWidth="md">
-      <DataTable />
-    </Container>
+    <SetRtl>
+      <Container maxWidth="md">
+        <DataTable />
+      </Container>
+    </SetRtl>
   );
 }
 
