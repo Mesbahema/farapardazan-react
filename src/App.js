@@ -1,4 +1,4 @@
-import DataTable from "./components/DataTable";
+import DataTable from "./components/DataTable/DataTable";
 import Container from '@material-ui/core/Container';
 import SetRtl from "./components/SetRtl";
 
