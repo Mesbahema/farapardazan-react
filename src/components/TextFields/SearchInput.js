@@ -4,12 +4,14 @@ import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import SearchIcon from '@material-ui/icons/Search';
-import DirectionsIcon from '@material-ui/icons/Directions';
 
 import ClearIcon from '@material-ui/icons/Clear';
 import MultilineTextField from './MultilineTextField';
+
+import { useContext } from 'react'
+import { DataContext } from '../../store/GlobalState'
+
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,23 +37,39 @@ const useStyles = makeStyles((theme) => ({
 export default function SearchInput(props) {
   const classes = useStyles();
 
+  const { state, dispatch } = useContext(DataContext)
+
+  const {filter, filterBy} = state
+
+  const handleChange = (event) => {
+    dispatch({
+      type: 'SET_FILTER', payload: event.target.value
+    })
+  }
+
+  const handleClick = (event) => {
+    event.preventDefault()
+    dispatch({
+      type: 'SET_FILTER', payload: ''
+    })
+  }
+
+  const disabled = filterBy ? false : true
+
   return (
     <Paper component="form" className={classes.root}>
-      {/* <IconButton className={classes.iconButton} aria-label="menu">
-        <MenuIcon />
-      </IconButton> */}
       <InputBase
         className={classes.input}
         placeholder="جستجو کنید"
         inputProps={{ 'aria-label': 'search google maps' }}
+        value={filter}
+        onChange={handleChange}
+        disabled={disabled}
       />
-      <IconButton type="submit" className={classes.iconButton} aria-label="search">
+      <IconButton type="submit" className={classes.iconButton} aria-label="search" onClick={handleClick}>
         <ClearIcon />
       </IconButton>
       <Divider className={classes.divider} orientation="vertical" />
-      {/* <IconButton color="primary" className={classes.iconButton} aria-label="directions">
-        <DirectionsIcon />
-      </IconButton> */}
       <MultilineTextField inputs={props.inputs}/>
     </Paper>
   );

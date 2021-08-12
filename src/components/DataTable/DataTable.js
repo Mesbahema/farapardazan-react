@@ -28,9 +28,11 @@ import SearchInput from '../TextFields/SearchInput'
 import { data as rows } from '../../data/data'
 import shortid from 'shortid'
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+import { useContext } from 'react'
+import { DataContext } from '../../store/GlobalState'
+
+
+
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -55,6 +57,14 @@ function stableSort(array, comparator) {
     return a[1] - b[1];
   });
   return stabilizedThis.map((el) => el[0]);
+}
+
+function stableFilter(array, filterBy, filter) {
+  if(filterBy) {
+    const result = array.filter(element => element[filterBy].includes(filter))
+    return result
+  }
+  return array
 }
 
 const headCells = [
@@ -201,7 +211,7 @@ const EnhancedTableToolbar = (props) => {
             onClose={handleClose}
           >
             <MenuItem>
-            <SearchInput inputs={inputs} />
+              <SearchInput inputs={inputs} />
             </MenuItem>
           </Menu>
         </>
@@ -248,6 +258,10 @@ export default function DataTable() {
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+  const { state, dispatch } = useContext(DataContext)
+
+  const {filter, filterBy} = state
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -259,6 +273,9 @@ export default function DataTable() {
   });
 
   const handleSelectAllClick = (event) => {
+
+
+
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.name);
       setSelected(newSelecteds);
@@ -303,6 +320,7 @@ export default function DataTable() {
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
+  
 
   return (
     <div className={classes.root}>
@@ -325,7 +343,7 @@ export default function DataTable() {
               rowCount={rows.length}
             />
             <TableBody>
-              {stableSort(rows, getComparator(order, orderBy))
+              {stableSort( stableFilter(rows, filterBy, filter), getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);

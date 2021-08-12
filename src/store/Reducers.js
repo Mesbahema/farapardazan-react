@@ -12,6 +12,16 @@ const reducers = (state, action) => {
                 ...state,
                 // notify: action.payload
             };
+        case ACTIONS.SET_FILTER_BY:
+            return {
+                ...state,
+                filterBy: action.payload
+            };
+        case ACTIONS.SET_FILTER:
+            return {
+                ...state,
+                filter: action.payload
+            };
     
         default:
             return state;
