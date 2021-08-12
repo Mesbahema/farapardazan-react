@@ -15,10 +15,14 @@ export const getUrlParams = (states) => {
     const urlParams = new URLSearchParams(queryString);
 
     for (const [key, value] of Object.entries(states)) {
-        
+
         const param = urlParams.get(key)
 
-        object[key] = param
+        if (param){
+            object[key] = param
+        } else {
+            object[key] = states[key]
+        }
     }
     return object
 }
