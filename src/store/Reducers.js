@@ -5,12 +5,22 @@ const reducers = (state, action) => {
         case ACTIONS.SET_ORDER:
             return {
                 ...state,
-                // notify: action.payload
+                order: action.payload
             };
         case ACTIONS.SET_ORDER_BY:
             return {
                 ...state,
-                // notify: action.payload
+                orderBy: action.payload
+            };
+        case ACTIONS.SET_SELECTED:
+            return {
+                ...state,
+                selected: action.payload
+            };
+        case ACTIONS.SET_PAGE:
+            return {
+                ...state,
+                page: action.payload
             };
         case ACTIONS.SET_FILTER_BY:
             return {
@@ -21,6 +31,11 @@ const reducers = (state, action) => {
             return {
                 ...state,
                 filter: action.payload
+            };
+        case ACTIONS.SET_ROWS_PER_PAGE:
+            return {
+                ...state,
+                rowsPerPage: action.payload
             };
     
         default:

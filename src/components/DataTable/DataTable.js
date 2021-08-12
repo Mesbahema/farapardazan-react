@@ -31,6 +31,8 @@ import shortid from 'shortid'
 import { useContext } from 'react'
 import { DataContext } from '../../store/GlobalState'
 
+import Badge from '@material-ui/core/Badge';
+
 
 
 function descendingComparator(a, b, orderBy) {
@@ -60,7 +62,7 @@ function stableSort(array, comparator) {
 }
 
 function stableFilter(array, filterBy, filter) {
-  if(filterBy) {
+  if (filterBy) {
     const result = array.filter(element => element[filterBy].includes(filter))
     return result
   }
@@ -200,7 +202,9 @@ const EnhancedTableToolbar = (props) => {
         <>
           <Tooltip title="Filter list" onClick={handleClick}>
             <IconButton aria-label="filter list">
-              <FilterListIcon />
+              <Badge badgeContent="1" color="primary">
+                <FilterListIcon />
+              </Badge>
             </IconButton>
           </Tooltip>
           <Menu
@@ -251,25 +255,26 @@ const useStyles = makeStyles((theme) => ({
 
 export default function DataTable() {
   const classes = useStyles();
-  const [order, setOrder] = React.useState('asc');
-  const [orderBy, setOrderBy] = React.useState('id');
-  const [selected, setSelected] = React.useState([]);
-  const [page, setPage] = React.useState(0);
+
   const [dense, setDense] = React.useState(false);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
   const { state, dispatch } = useContext(DataContext)
 
-  const {filter, filterBy} = state
+  const { order, orderBy, selected, page, rowsPerPage, filterBy, filter } = state
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
+    console.log(isAsc)
+    dispatch({
+      type: 'SET_ORDER', payload: isAsc ? 'desc' : 'asc'
+    })
+    dispatch({
+      type: 'SET_ORDER_BY', payload: property
+    })
   };
 
   React.useEffect(() => {
-    // console.log(rowsPerPage)
+    console.log(order, orderBy, page)
   });
 
   const handleSelectAllClick = (event) => {
@@ -278,10 +283,14 @@ export default function DataTable() {
 
     if (event.target.checked) {
       const newSelecteds = rows.map((n) => n.name);
-      setSelected(newSelecteds);
+      dispatch({
+        type: 'SET_SELECTED', payload: newSelecteds
+      })
       return;
     }
-    setSelected([]);
+    dispatch({
+      type: 'SET_SELECTED', payload: []
+    })
   };
 
   const handleClick = (event, name) => {
@@ -300,17 +309,24 @@ export default function DataTable() {
         selected.slice(selectedIndex + 1),
       );
     }
-
-    setSelected(newSelected);
+    dispatch({
+      type: 'SET_SELECTED', payload: newSelected
+    })
   };
 
   const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    dispatch({
+      type: 'SET_PAGE', payload: newPage
+    })
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
+    dispatch({
+      type: 'SET_ROWS_PER_PAGE', payload: parseInt(event.target.value, 10)
+    })
+    dispatch({
+      type: 'SET_PAGE', payload: 0
+    })
   };
 
   const handleChangeDense = (event) => {
@@ -320,7 +336,7 @@ export default function DataTable() {
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
-  
+
 
   return (
     <div className={classes.root}>
@@ -343,7 +359,7 @@ export default function DataTable() {
               rowCount={rows.length}
             />
             <TableBody>
-              {stableSort( stableFilter(rows, filterBy, filter), getComparator(order, orderBy))
+              {stableSort(stableFilter(rows, filterBy, filter), getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);

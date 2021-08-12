@@ -12,7 +12,7 @@ export const DataProvider = ({ children }) => {
         orderBy: 'id',
         selected: [],
         page: 1,
-        perPage: 5,
+        rowsPerPage: 5,
         filterBy: '',
         filter: '',
     }
