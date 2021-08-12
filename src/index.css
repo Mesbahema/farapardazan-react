@@ -11,3 +11,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+@font-face {
+  font-family: "Vazir";
+  src: url("./fonts/fa/Vazir-Bold-FD-WOL.woff2");
+  }
