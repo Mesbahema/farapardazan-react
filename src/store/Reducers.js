@@ -30,12 +30,24 @@ const reducers = (state, action) => {
         case ACTIONS.SET_FILTER:
             return {
                 ...state,
-                filter: action.payload
+                filter: action.payload,
+                page: 0
             };
         case ACTIONS.SET_ROWS_PER_PAGE:
             return {
                 ...state,
                 rowsPerPage: action.payload
+            };
+    
+        case ACTIONS.SET_INITIAL_STATE:
+            return {
+                ...state,
+                order: action.payload.order,
+                orderBy: action.payload.orderBy,
+                page: parseInt(action.payload.page),
+                filterBy: action.payload.filterBy,
+                filter: action.payload.filter,
+                rowsPerPage: parseInt(action.payload.rowsPerPage)
             };
     
         default:

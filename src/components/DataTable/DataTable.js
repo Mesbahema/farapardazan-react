@@ -25,7 +25,7 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import SearchInput from '../TextFields/SearchInput'
-import { data as rows } from '../../data/data'
+import { data } from '../../data/data'
 import shortid from 'shortid'
 
 import { useContext } from 'react'
@@ -62,8 +62,8 @@ function stableSort(array, comparator) {
 }
 
 function stableFilter(array, filterBy, filter) {
-  if (filterBy) {
-    const result = array.filter(element => element[filterBy].includes(filter))
+  if (filterBy && filter) {
+    const result = array.filter(element => element[filterBy].toLowerCase().includes(filter.toLowerCase()))
     return result
   }
   return array
@@ -254,6 +254,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function DataTable() {
+  
+
   const classes = useStyles();
 
   const [dense, setDense] = React.useState(false);
@@ -262,9 +264,11 @@ export default function DataTable() {
 
   const { order, orderBy, selected, page, rowsPerPage, filterBy, filter } = state
 
+  const rows = stableFilter(data, filterBy, filter)
+
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
-    console.log(isAsc)
+
     dispatch({
       type: 'SET_ORDER', payload: isAsc ? 'desc' : 'asc'
     })
@@ -272,10 +276,6 @@ export default function DataTable() {
       type: 'SET_ORDER_BY', payload: property
     })
   };
-
-  React.useEffect(() => {
-    console.log(order, orderBy, page)
-  });
 
   const handleSelectAllClick = (event) => {
 
@@ -337,7 +337,7 @@ export default function DataTable() {
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
-
+  
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -359,7 +359,7 @@ export default function DataTable() {
               rowCount={rows.length}
             />
             <TableBody>
-              {stableSort(stableFilter(rows, filterBy, filter), getComparator(order, orderBy))
+              {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row.name);
